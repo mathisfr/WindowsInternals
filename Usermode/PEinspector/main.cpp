@@ -6,10 +6,10 @@
 #include <string>
 
 /*
-*   Oui le code est horrible pour le moment, mais je decouvre pour le moment :)
+*   Oui le code est horrible pour le moment, mais je decouvre :)
 *   Je cleanerai plus tard avec des class e.t.c...
 *   
-*   Si vous voulez tester dans l'etat, compiler le projet suivant l'executable à analyser,
+*   Si vous voulez tester dans l'etat, compiler le projet suivant l'executable Ã  analyser,
 *   si c'est 32 compiler en 32 sinon 64.
 */
 
