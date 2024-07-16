@@ -48,6 +48,11 @@ extern "C"
 			curentProcessEntry = curentProcessEntry->Flink;
 			curentProcess = (PEPROCESS)((PUCHAR)curentProcessEntry - 0x448);
 		}
+
+		/*
+		*	In this code I don't check the last item in the list because I believe that the program I'm looking for won't be last in the list while I'm testing.
+		*	But this is a very bad thing, so after the loop if the program you're looking for isn't found try looking in “processEntryBefore”.
+  		*/
 	};
 
 	void HidingProcessUnload(_In_ PDRIVER_OBJECT  DriverObject) {
