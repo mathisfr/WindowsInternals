@@ -1,8 +1,11 @@
 #include "PEParserNTHeaders.h"
 #include "PEParserDosHeader.h"
 #include <iostream>
+#include <sstream>
+#include <ctime>
 PEParserNTHeaders::PEParserNTHeaders() {
     ZeroMemory(&imageNtHeader, sizeof(imageNtHeader));
+    ZeroMemory(&imageFileHeader, sizeof(imageNtHeader));
 }
 
 PEParserNTHeaders::PEParserNTHeaders(std::ifstream& file, PEParserDosHeader& peParserDosHeader, bool& is64Architecture) {
@@ -12,12 +15,25 @@ PEParserNTHeaders::PEParserNTHeaders(std::ifstream& file, PEParserDosHeader& peP
 		b_error = true;
 	}
 	is64Architecture = CHECK_ARCHITECTURE(file);
-    if (is64Architecture) {
-        peParserOptionalHeader64 = PEParserOptionalHeader64(imageNtHeader.OptionalHeader);
-    }
-    else {
+    peParserOptionalHeader64 = PEParserOptionalHeader64(imageNtHeader.OptionalHeader);
+    imageFileHeader = imageNtHeader.FileHeader;
 
-    }
+    // Init FileHeader variable
+    std::string str_FileHeaderMachine = getMachine(imageFileHeader.Machine);
+    std::string str_FileHeaderNumberOfSections = getNumberOfSections(imageFileHeader.NumberOfSections);
+    std::string str_FileHeaderTimeDateStamp = getTimeDateStamp(imageFileHeader.TimeDateStamp);
+    std::string str_FileHeaderPointerToSymbolTable = getPointerToSymbolTable(imageFileHeader.PointerToSymbolTable);
+    std::string str_FileHeaderNumberOfSymbols = getNumberOfSymbols(imageFileHeader.NumberOfSymbols);
+    std::string str_FileHeaderSizeOfOptionalHeader = getSizeOfOptionalHeader(imageFileHeader.SizeOfOptionalHeader);
+    std::string str_FileHeaderCharacteristics = getCharacteristics(imageFileHeader.Characteristics);
+
+    mapFileHeader.insert(std::pair<std::string, std::string>("Machine", str_FileHeaderMachine));
+    mapFileHeader.insert(std::pair<std::string, std::string>("Number Of Sections", str_FileHeaderNumberOfSections));
+    mapFileHeader.insert(std::pair<std::string, std::string>("Time Date Stamp", str_FileHeaderTimeDateStamp));
+    mapFileHeader.insert(std::pair<std::string, std::string>("Pointer To SymbolTable", str_FileHeaderPointerToSymbolTable));
+    mapFileHeader.insert(std::pair<std::string, std::string>("Number Of Symbols", str_FileHeaderNumberOfSymbols));
+    mapFileHeader.insert(std::pair<std::string, std::string>("Size Of Optional Header", str_FileHeaderSizeOfOptionalHeader));
+    mapFileHeader.insert(std::pair<std::string, std::string>("Characteristics", str_FileHeaderCharacteristics));
 }
 
 std::string PEParserNTHeaders::getSignature() {
@@ -37,7 +53,7 @@ bool PEParserNTHeaders::CHECK_ARCHITECTURE(std::ifstream& file) {
 }
 
 std::string PEParserNTHeaders::getOptionalHeaderMagicNumberFromNTHeaders() {
-    std::string magicString = "Undefined";
+    std::string magicString = PEPARSER_UNDEFINED_STRING;
     switch (imageNtHeader.OptionalHeader.Magic) {
     case IMAGE_NT_OPTIONAL_HDR32_MAGIC:
         magicString = "PE32";
@@ -52,105 +68,187 @@ std::string PEParserNTHeaders::getOptionalHeaderMagicNumberFromNTHeaders() {
     return magicString;
 }
 
-std::string PEParserNTHeaders::getMachineTypes() {
-    std::string machineTypeString = "Undefined";
-    switch (imageNtHeader.FileHeader.Machine) {
+std::string PEParserNTHeaders::getMachine(WORD machine) {
+    std::string machineType;
+    switch (machine) {
     case IMAGE_FILE_MACHINE_UNKNOWN:
-        machineTypeString = "Unknown";
-        break;
-    case IMAGE_FILE_MACHINE_TARGET_HOST:
-        machineTypeString = "Target Host";
-        break;
-    case IMAGE_FILE_MACHINE_I386:
-        machineTypeString = "Intel 386";
-        break;
-    case IMAGE_FILE_MACHINE_R3000:
-        machineTypeString = "MIPS little-endian (R3000)";
-        break;
-    case IMAGE_FILE_MACHINE_R4000:
-        machineTypeString = "MIPS little-endian (R4000)";
-        break;
-    case IMAGE_FILE_MACHINE_R10000:
-        machineTypeString = "MIPS little-endian (R10000)";
-        break;
-    case IMAGE_FILE_MACHINE_WCEMIPSV2:
-        machineTypeString = "MIPS little-endian WCE v2";
+        machineType = "The content of this field is assumed to be applicable to any machine type";
         break;
     case IMAGE_FILE_MACHINE_ALPHA:
-        machineTypeString = "Alpha AXP";
-        break;
-    case IMAGE_FILE_MACHINE_SH3:
-        machineTypeString = "SH3 little-endian";
-        break;
-    case IMAGE_FILE_MACHINE_SH3DSP:
-        machineTypeString = "SH3DSP";
-        break;
-    case IMAGE_FILE_MACHINE_SH3E:
-        machineTypeString = "SH3E little-endian";
-        break;
-    case IMAGE_FILE_MACHINE_SH4:
-        machineTypeString = "SH4 little-endian";
-        break;
-    case IMAGE_FILE_MACHINE_SH5:
-        machineTypeString = "SH5";
-        break;
-    case IMAGE_FILE_MACHINE_ARM:
-        machineTypeString = "ARM Little-Endian";
-        break;
-    case IMAGE_FILE_MACHINE_THUMB:
-        machineTypeString = "ARM Thumb/Thumb-2 Little-Endian";
-        break;
-    case IMAGE_FILE_MACHINE_ARMNT:
-        machineTypeString = "ARM Thumb-2 Little-Endian";
-        break;
-    case IMAGE_FILE_MACHINE_AM33:
-        machineTypeString = "AM33";
-        break;
-    case IMAGE_FILE_MACHINE_POWERPC:
-        machineTypeString = "IBM PowerPC Little-Endian";
-        break;
-    case IMAGE_FILE_MACHINE_POWERPCFP:
-        machineTypeString = "PowerPC with floating point support";
-        break;
-    case IMAGE_FILE_MACHINE_IA64:
-        machineTypeString = "Intel 64";
-        break;
-    case IMAGE_FILE_MACHINE_MIPS16:
-        machineTypeString = "MIPS16";
+        machineType = "Alpha AXP, 32-bit address space";
         break;
     case IMAGE_FILE_MACHINE_ALPHA64:
-        machineTypeString = "Alpha64";
+        machineType = "Alpha 64, 64-bit address space";
         break;
-    case IMAGE_FILE_MACHINE_MIPSFPU:
-        machineTypeString = "MIPS with FPU";
-        break;
-    case IMAGE_FILE_MACHINE_MIPSFPU16:
-        machineTypeString = "MIPS16 with FPU";
-        break;
-    case IMAGE_FILE_MACHINE_TRICORE:
-        machineTypeString = "Infineon";
-        break;
-    case IMAGE_FILE_MACHINE_CEF:
-        machineTypeString = "CEF";
-        break;
-    case IMAGE_FILE_MACHINE_EBC:
-        machineTypeString = "EFI Byte Code";
+    case IMAGE_FILE_MACHINE_AM33:
+        machineType = "Matsushita AM33";
         break;
     case IMAGE_FILE_MACHINE_AMD64:
-        machineTypeString = "AMD64 (K8)";
+        machineType = "x64";
         break;
-    case IMAGE_FILE_MACHINE_M32R:
-        machineTypeString = "M32R little-endian";
+    case IMAGE_FILE_MACHINE_ARM:
+        machineType = "ARM little endian";
         break;
     case IMAGE_FILE_MACHINE_ARM64:
-        machineTypeString = "ARM64 Little-Endian";
+        machineType = "ARM64 little endian";
         break;
-    case IMAGE_FILE_MACHINE_CEE:
-        machineTypeString = "CEE";
+    case IMAGE_FILE_MACHINE_ARMNT:
+        machineType = "ARM Thumb-2 little endian";
+        break;
+    case IMAGE_FILE_MACHINE_EBC:
+        machineType = "EFI byte code";
+        break;
+    case IMAGE_FILE_MACHINE_I386:
+        machineType = "Intel 386 or later processors and compatible processors";
+        break;
+    case IMAGE_FILE_MACHINE_IA64:
+        machineType = "Intel Itanium processor family";
+        break;
+    case 0x6232:
+        machineType = "LoongArch 32-bit processor family";
+        break;
+    case 0x6264:
+        machineType = "LoongArch 64-bit processor family";
+        break;
+    case IMAGE_FILE_MACHINE_M32R:
+        machineType = "Mitsubishi M32R little endian";
+        break;
+    case IMAGE_FILE_MACHINE_MIPS16:
+        machineType = "MIPS16";
+        break;
+    case IMAGE_FILE_MACHINE_MIPSFPU:
+        machineType = "MIPS with FPU";
+        break;
+    case IMAGE_FILE_MACHINE_MIPSFPU16:
+        machineType = "MIPS16 with FPU";
+        break;
+    case IMAGE_FILE_MACHINE_POWERPC:
+        machineType = "Power PC little endian";
+        break;
+    case IMAGE_FILE_MACHINE_POWERPCFP:
+        machineType = "Power PC with floating point support";
+        break;
+    case IMAGE_FILE_MACHINE_R4000:
+        machineType = "MIPS little endian";
+        break;
+    case 0x5032:
+        machineType = "RISC-V 32-bit address space";
+        break;
+    case 0x5064:
+        machineType = "RISC-V 64-bit address space";
+        break;
+    case 0x5128:
+        machineType = "RISC-V 128-bit address space";
+        break;
+    case IMAGE_FILE_MACHINE_SH3:
+        machineType = "Hitachi SH3";
+        break;
+    case IMAGE_FILE_MACHINE_SH3DSP:
+        machineType = "Hitachi SH3 DSP";
+        break;
+    case IMAGE_FILE_MACHINE_SH4:
+        machineType = "Hitachi SH4";
+        break;
+    case IMAGE_FILE_MACHINE_SH5:
+        machineType = "Hitachi SH5";
+        break;
+    case IMAGE_FILE_MACHINE_THUMB:
+        machineType = "Thumb";
+        break;
+    case IMAGE_FILE_MACHINE_WCEMIPSV2:
+        machineType = "MIPS little-endian WCE v2";
         break;
     default:
-        machineTypeString = "Unknown machine type";
+        machineType = PEPARSER_UNDEFINED_STRING;
         break;
     }
-    return machineTypeString;
+    return machineType;
+}
+
+std::string PEParserNTHeaders::getNumberOfSections(WORD numberofsection){
+    std::stringstream ss;
+    ss << "0x" << PEPARSER_IOMANIP_HEX << static_cast<int>(numberofsection);
+    return ss.str();
+}
+
+std::string PEParserNTHeaders::getTimeDateStamp(DWORD timedatestamp){
+    time_t timestamp = static_cast<time_t>(timedatestamp);
+    struct tm* timeinfo = localtime(&timestamp);
+    char buffer[80];
+    strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", timeinfo);
+    return std::string(buffer);
+}
+
+std::string PEParserNTHeaders::getPointerToSymbolTable(DWORD pointertosymboltable) {
+    std::stringstream ss;
+    ss << "0x" << PEPARSER_IOMANIP_HEX << pointertosymboltable;
+    return ss.str();
+}
+
+std::string PEParserNTHeaders::getNumberOfSymbols(DWORD numberofsymbols) {
+    std::stringstream ss;
+    ss << "0x" << PEPARSER_IOMANIP_HEX << numberofsymbols;
+    return ss.str();
+}
+
+std::string PEParserNTHeaders::getSizeOfOptionalHeader(WORD sizeofoptionalheader) {
+    std::stringstream ss;
+    ss << "0x" << PEPARSER_IOMANIP_HEX << static_cast<int>(sizeofoptionalheader);
+    return ss.str();
+}
+
+std::string PEParserNTHeaders::getCharacteristics(WORD characteristics){
+    std::stringstream ss;
+    std::string listDecorator("\t\t * ");
+    ss << '\n';
+    if (characteristics & IMAGE_FILE_RELOCS_STRIPPED) {
+        ss << listDecorator << "Image only, Windows CE, and Microsoft Windows NT and later. This indicates that the file does not contain base relocations and must therefore be loaded at its preferred base address. If the base address is not available, the loader reports an error. The default behavior of the linker is to strip base relocations from executable (EXE) files." << std::endl;
+    }
+    if (characteristics & IMAGE_FILE_EXECUTABLE_IMAGE) {
+        ss << listDecorator << "Image only. This indicates that the image file is valid and can be run. If this flag is not set, it indicates a linker error." << std::endl;
+    }
+    if (characteristics & IMAGE_FILE_LINE_NUMS_STRIPPED) {
+        ss << listDecorator << "COFF line numbers have been removed. This flag is deprecated and should be zero." << std::endl;
+    }
+    if (characteristics & IMAGE_FILE_LOCAL_SYMS_STRIPPED) {
+        ss << listDecorator << "COFF symbol table entries for local symbols have been removed. This flag is deprecated and should be zero." << std::endl;
+    }
+    if (characteristics & 0x0010) {
+        ss << listDecorator << "Obsolete. Aggressively trim working set. This flag is deprecated for Windows 2000 and later and must be zero." << std::endl;
+    }
+    if (characteristics & IMAGE_FILE_LARGE_ADDRESS_AWARE) {
+        ss << listDecorator << "Application can handle > 2-GB addresses." << std::endl;
+    }
+    if (characteristics & 0x0040) {
+        ss << listDecorator << "This flag is reserved for future use." << std::endl;
+    }
+    if (characteristics & IMAGE_FILE_BYTES_REVERSED_LO) {
+        ss << listDecorator << "Little endian: the least significant bit (LSB) precedes the most significant bit (MSB) in memory. This flag is deprecated and should be zero." << std::endl;
+    }
+    if (characteristics & IMAGE_FILE_32BIT_MACHINE) {
+        ss << listDecorator << "Machine is based on a 32-bit-word architecture." << std::endl;
+    }
+    if (characteristics & IMAGE_FILE_DEBUG_STRIPPED) {
+        ss << listDecorator << "Debugging information is removed from the image file." << std::endl;
+    }
+    if (characteristics & IMAGE_FILE_REMOVABLE_RUN_FROM_SWAP) {
+        ss << listDecorator << "If the image is on removable media, fully load it and copy it to the swap file." << std::endl;
+    }
+    if (characteristics & IMAGE_FILE_NET_RUN_FROM_SWAP) {
+        ss << listDecorator << "If the image is on network media, fully load it and copy it to the swap file." << std::endl;
+    }
+    if (characteristics & IMAGE_FILE_SYSTEM) {
+        ss << listDecorator << "The image file is a system file, not a user program." << std::endl;
+    }
+    if (characteristics & IMAGE_FILE_DLL) {
+        ss << listDecorator << "The image file is a dynamic-link library (DLL). Such files are considered executable files for almost all purposes, although they cannot be directly run." << std::endl;
+    }
+    if (characteristics & IMAGE_FILE_UP_SYSTEM_ONLY) {
+        ss << listDecorator << "The file should be run only on a uniprocessor machine." << std::endl;
+    }
+    if (characteristics & IMAGE_FILE_BYTES_REVERSED_HI) {
+        ss << listDecorator << "Big endian: the MSB precedes the LSB in memory. This flag is deprecated and should be zero." << std::endl;
+    }
+
+    return ss.str();
 }

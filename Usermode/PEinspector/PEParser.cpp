@@ -25,27 +25,19 @@ PEParser::PEParser(std::string fileName) {
 		b_error = true;
 		return;
 	}
+}
 
-	std::map < std::string, std::string > peInfoOptionalHeader;
-	std::string subsystem;
-	std::string architecture;
-	if (b_is64) {
-		subsystem = PEParserOptionalHeader64::getSubsystem(peParserNTHeaders.peParserOptionalHeader64.OptionalHeader.Subsystem);
-		peInfoOptionalHeader.insert(std::pair<std::string, std::string>(("Subsystem"), subsystem));
-
-		architecture = PEParserOptionalHeader64::getOptionalHeaderMagic(peParserNTHeaders.peParserOptionalHeader64.OptionalHeader.Magic);
-		peInfoOptionalHeader.insert(std::pair<std::string, std::string>(("Architecture"), architecture));
-	}
-	else {
-
-	}
-
+void PEParser::printDump() {
 	std::cout << "[PE inspector " << fileName << "]" << std::endl;
 	printTitle("DosHeader");
 	printStandard("Magic Number", peParserDosHeader.getMagicNumber());
 	printTitle("NTHeaders");
+	printTitle("FileHeader");
+	for (std::map<std::string, std::string>::iterator it = peParserNTHeaders.mapFileHeader.begin(); it != peParserNTHeaders.mapFileHeader.end(); it++) {
+		printStandard(it->first, it->second);
+	}
 	printTitle("OptionalHeader");
-	for (std::map<std::string, std::string>::iterator it = peInfoOptionalHeader.begin(); it != peInfoOptionalHeader.end(); it++) {
+	for (std::map<std::string, std::string>::iterator it = peParserNTHeaders.peParserOptionalHeader64.mapOptionalHeader.begin(); it != peParserNTHeaders.peParserOptionalHeader64.mapOptionalHeader.end(); it++) {
 		printStandard(it->first, it->second);
 	}
 }

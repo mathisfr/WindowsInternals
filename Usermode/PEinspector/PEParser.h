@@ -15,6 +15,7 @@ private:
 	void printStandard(std::string strA, std::string strB);
 public:
 	PEParser(std::string fileName);
+	void printDump();
 
 	PEParserDosHeader peParserDosHeader;
 	PEParserNTHeaders peParserNTHeaders;
