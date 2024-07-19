@@ -127,7 +127,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="APEParserOptionalHeader.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="PEParser.cpp" />
+    <ClCompile Include="PEParserDosHeader.cpp" />
+    <ClCompile Include="PEParserNTHeaders.cpp" />
+    <ClCompile Include="PEParserOptionalHeader64.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="APEParserOptionalHeader.h" />
+    <ClInclude Include="PEParser.h" />
+    <ClInclude Include="PEParserDosHeader.h" />
+    <ClInclude Include="PEParserNTHeaders.h" />
+    <ClInclude Include="PEParserOptionalHeader64.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
