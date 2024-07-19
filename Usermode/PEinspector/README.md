@@ -1,4 +1,5 @@
 # PE inspector
+# /!\ WORK IN PROGRESS /!\
 Ce projet a pour objectif de découvrir et d'analyser le format de fichier PE (_Portable Executable_) de Windows.
 
 Pour approfondir vos connaissances et mener vos propres investigations, je vous recommande de consulter les ressources suivantes, qui m'ont été d'une aide précieuse :
