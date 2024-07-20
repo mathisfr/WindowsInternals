@@ -4,9 +4,7 @@
 class PEParserDosHeader
 {
 private:
-
 	IMAGE_DOS_HEADER imageDosHeader;
-
 public:
 	PEParserDosHeader();
 	PEParserDosHeader(std::ifstream& file);
@@ -15,5 +13,6 @@ public:
 	long getNtHeadersOffset();
 
 	std::string getMagicNumber();
+	IMAGE_DOS_HEADER& getImageDosHeader();
 };
 

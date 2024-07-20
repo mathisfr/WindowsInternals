@@ -40,6 +40,7 @@ void PEParser::printDump() {
 	for (std::map<std::string, std::string>::iterator it = peParserNTHeaders.peParserOptionalHeader64.mapOptionalHeader.begin(); it != peParserNTHeaders.peParserOptionalHeader64.mapOptionalHeader.end(); it++) {
 		printStandard(it->first, it->second);
 	}
+	peParserNTHeaders.peParserOptionalHeader64.printSectionHeaders();
 }
 
 void PEParser::printTitle(std::string str) {

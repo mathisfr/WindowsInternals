@@ -1,42 +1,47 @@
 #include "PEParserOptionalHeader64.h"
 #include <Windows.h>
 #include <sstream>
+#include <fstream>
+#include <iostream>
 
 PEParserOptionalHeader64::PEParserOptionalHeader64(){
-    ZeroMemory(&OptionalHeader, sizeof(OptionalHeader));
+    ZeroMemory(&imageOptionalHeader, sizeof(imageOptionalHeader)); 
 }
 
-PEParserOptionalHeader64::PEParserOptionalHeader64(IMAGE_OPTIONAL_HEADER64& imageOptionalHeader64) {
-    OptionalHeader = imageOptionalHeader64;
-    str_architecture = PEParserOptionalHeader64::getOptionalHeaderMagic(OptionalHeader.Magic);
-    str_majorLinkerVersion = PEParserOptionalHeader64::getMajorLinkerVersion(OptionalHeader.MajorLinkerVersion);
-    str_minorLinkerVersion = PEParserOptionalHeader64::getMinorLinkerVersion(OptionalHeader.MinorLinkerVersion);
-    str_sizeOfCode = PEParserOptionalHeader64::getSizeOfCode(OptionalHeader.SizeOfCode);
-    str_sizeOfInitializedData = PEParserOptionalHeader64::getSizeOfInitializedData(OptionalHeader.SizeOfInitializedData);
-    str_sizeOfUninitializedData = PEParserOptionalHeader64::getSizeOfUninitializedData(OptionalHeader.SizeOfUninitializedData);
-    str_addressOfEntryPoint = PEParserOptionalHeader64::getAddressOfEntryPoint(OptionalHeader.AddressOfEntryPoint);
-    str_baseOfCode = PEParserOptionalHeader64::getBaseOfCode(OptionalHeader.BaseOfCode);
-    str_imageBase = PEParserOptionalHeader64::getImageBase(OptionalHeader.ImageBase);
-    str_sectionAlignment = PEParserOptionalHeader64::getSectionAlignment(OptionalHeader.SectionAlignment);
-    str_fileAlignment = PEParserOptionalHeader64::getFileAlignment(OptionalHeader.FileAlignment);
-    str_majorOperatingSystemVersion = PEParserOptionalHeader64::getMajorOperatingSystemVersion(OptionalHeader.MajorOperatingSystemVersion);
-    str_minorOperatingSystemVersion = PEParserOptionalHeader64::getMinorOperatingSystemVersion(OptionalHeader.MinorOperatingSystemVersion);
-    str_majorImageVersion = PEParserOptionalHeader64::getMajorImageVersion(OptionalHeader.MajorImageVersion);
-    str_minorImageVersion = PEParserOptionalHeader64::getMinorImageVersion(OptionalHeader.MinorImageVersion);
-    str_majorSubsystemVersion = PEParserOptionalHeader64::getMajorSubsystemVersion(OptionalHeader.MajorSubsystemVersion);
-    str_minorSubsystemVersion = PEParserOptionalHeader64::getMinorSubsystemVersion(OptionalHeader.MinorSubsystemVersion);
-    str_win32VersionValue = PEParserOptionalHeader64::getWin32VersionValue(OptionalHeader.Win32VersionValue);
-    str_sizeOfImage = PEParserOptionalHeader64::getSizeOfImage(OptionalHeader.SizeOfImage);
-    str_sizeOfHeaders = PEParserOptionalHeader64::getSizeOfHeaders(OptionalHeader.SizeOfHeaders);
-    str_checkSum = PEParserOptionalHeader64::getCheckSum(OptionalHeader.CheckSum);
-    str_subsystem = PEParserOptionalHeader64::getSubsystem(OptionalHeader.Subsystem);
-    str_dllCharacteristics = PEParserOptionalHeader64::getDllCharacteristics(OptionalHeader.DllCharacteristics);
-    str_sizeOfStackReserve = PEParserOptionalHeader64::getSizeOfStackReserve(OptionalHeader.SizeOfStackReserve);
-    str_sizeOfStackCommit = PEParserOptionalHeader64::getSizeOfStackCommit(OptionalHeader.SizeOfStackCommit);
-    str_sizeOfHeapReserve = PEParserOptionalHeader64::getSizeOfHeapReserve(OptionalHeader.SizeOfHeapReserve);
-    str_sizeOfHeapCommit = PEParserOptionalHeader64::getSizeOfHeapCommit(OptionalHeader.SizeOfHeapCommit);
-    str_loaderFlags = PEParserOptionalHeader64::getLoaderFlags(OptionalHeader.LoaderFlags);
-    str_numberOfRvaAndSizes = PEParserOptionalHeader64::getNumberOfRvaAndSizes(OptionalHeader.NumberOfRvaAndSizes);
+PEParserOptionalHeader64::PEParserOptionalHeader64(std::ifstream& file, IMAGE_DOS_HEADER& imageDosHeader, IMAGE_FILE_HEADER& imageFileHeader, IMAGE_OPTIONAL_HEADER64& imageOptionalHeader64) {
+    imageOptionalHeader = imageOptionalHeader64;
+    this->imageDosHeader = &imageDosHeader;
+    this->imageFileHeader = &imageFileHeader;
+    this->file = &file;
+    str_architecture = PEParserOptionalHeader64::getOptionalHeaderMagic(imageOptionalHeader.Magic);
+    str_majorLinkerVersion = PEParserOptionalHeader64::getMajorLinkerVersion(imageOptionalHeader.MajorLinkerVersion);
+    str_minorLinkerVersion = PEParserOptionalHeader64::getMinorLinkerVersion(imageOptionalHeader.MinorLinkerVersion);
+    str_sizeOfCode = PEParserOptionalHeader64::getSizeOfCode(imageOptionalHeader.SizeOfCode);
+    str_sizeOfInitializedData = PEParserOptionalHeader64::getSizeOfInitializedData(imageOptionalHeader.SizeOfInitializedData);
+    str_sizeOfUninitializedData = PEParserOptionalHeader64::getSizeOfUninitializedData(imageOptionalHeader.SizeOfUninitializedData);
+    str_addressOfEntryPoint = PEParserOptionalHeader64::getAddressOfEntryPoint(imageOptionalHeader.AddressOfEntryPoint);
+    str_baseOfCode = PEParserOptionalHeader64::getBaseOfCode(imageOptionalHeader.BaseOfCode);
+    str_imageBase = PEParserOptionalHeader64::getImageBase(imageOptionalHeader.ImageBase);
+    str_sectionAlignment = PEParserOptionalHeader64::getSectionAlignment(imageOptionalHeader.SectionAlignment);
+    str_fileAlignment = PEParserOptionalHeader64::getFileAlignment(imageOptionalHeader.FileAlignment);
+    str_majorOperatingSystemVersion = PEParserOptionalHeader64::getMajorOperatingSystemVersion(imageOptionalHeader.MajorOperatingSystemVersion);
+    str_minorOperatingSystemVersion = PEParserOptionalHeader64::getMinorOperatingSystemVersion(imageOptionalHeader.MinorOperatingSystemVersion);
+    str_majorImageVersion = PEParserOptionalHeader64::getMajorImageVersion(imageOptionalHeader.MajorImageVersion);
+    str_minorImageVersion = PEParserOptionalHeader64::getMinorImageVersion(imageOptionalHeader.MinorImageVersion);
+    str_majorSubsystemVersion = PEParserOptionalHeader64::getMajorSubsystemVersion(imageOptionalHeader.MajorSubsystemVersion);
+    str_minorSubsystemVersion = PEParserOptionalHeader64::getMinorSubsystemVersion(imageOptionalHeader.MinorSubsystemVersion);
+    str_win32VersionValue = PEParserOptionalHeader64::getWin32VersionValue(imageOptionalHeader.Win32VersionValue);
+    str_sizeOfImage = PEParserOptionalHeader64::getSizeOfImage(imageOptionalHeader.SizeOfImage);
+    str_sizeOfHeaders = PEParserOptionalHeader64::getSizeOfHeaders(imageOptionalHeader.SizeOfHeaders);
+    str_checkSum = PEParserOptionalHeader64::getCheckSum(imageOptionalHeader.CheckSum);
+    str_subsystem = PEParserOptionalHeader64::getSubsystem(imageOptionalHeader.Subsystem);
+    str_dllCharacteristics = PEParserOptionalHeader64::getDllCharacteristics(imageOptionalHeader.DllCharacteristics);
+    str_sizeOfStackReserve = PEParserOptionalHeader64::getSizeOfStackReserve(imageOptionalHeader.SizeOfStackReserve);
+    str_sizeOfStackCommit = PEParserOptionalHeader64::getSizeOfStackCommit(imageOptionalHeader.SizeOfStackCommit);
+    str_sizeOfHeapReserve = PEParserOptionalHeader64::getSizeOfHeapReserve(imageOptionalHeader.SizeOfHeapReserve);
+    str_sizeOfHeapCommit = PEParserOptionalHeader64::getSizeOfHeapCommit(imageOptionalHeader.SizeOfHeapCommit);
+    str_loaderFlags = PEParserOptionalHeader64::getLoaderFlags(imageOptionalHeader.LoaderFlags);
+    str_numberOfRvaAndSizes = PEParserOptionalHeader64::getNumberOfRvaAndSizes(imageOptionalHeader.NumberOfRvaAndSizes);
 
     mapOptionalHeader.insert(std::pair<std::string, std::string>("Architecture", str_architecture));
     mapOptionalHeader.insert(std::pair<std::string, std::string>("Major Linker Version", str_majorLinkerVersion));
@@ -67,6 +72,29 @@ PEParserOptionalHeader64::PEParserOptionalHeader64(IMAGE_OPTIONAL_HEADER64& imag
     mapOptionalHeader.insert(std::pair<std::string, std::string>("Size Of Heap Commit", str_sizeOfHeapCommit));
     mapOptionalHeader.insert(std::pair<std::string, std::string>("Loader Flags", str_loaderFlags));
     mapOptionalHeader.insert(std::pair<std::string, std::string>("Number Of RVA And Sizes", str_numberOfRvaAndSizes));
+
+    sectionHeaders = new IMAGE_SECTION_HEADER[imageFileHeader.NumberOfSections];
+    parseSectionHeaders();
+}
+
+DWORD PEParserOptionalHeader64::getOffsetToSectionHeadersFromIndex(unsigned int index) {
+    return static_cast<DWORD>(imageDosHeader->e_lfanew) + sizeof(IMAGE_NT_HEADERS) + (IMAGE_SIZEOF_SECTION_HEADER * index);
+}
+
+void PEParserOptionalHeader64::parseSectionHeaders() {
+    for (unsigned int i = 0; i < imageFileHeader->NumberOfSections; i++) {
+        DWORD offsetToSectionHeader = getOffsetToSectionHeadersFromIndex(i);
+        file->seekg(offsetToSectionHeader, std::ios_base::beg);
+        file->read(reinterpret_cast<char*>(&sectionHeaders[i]), IMAGE_SIZEOF_SECTION_HEADER);
+    }
+}
+
+void PEParserOptionalHeader64::printSectionHeaders() {
+    std::cout << "Section Headers : " << std::endl;
+    std::string decoratorList("\t\t* ");
+    for (unsigned int i = 0; i < imageFileHeader->NumberOfSections; i++) {
+        std::cout << "\t- " << sectionHeaders[i].Name << std::endl;
+    }
 }
 
 std::string PEParserOptionalHeader64::getOptionalHeaderMagic(WORD magicType) {

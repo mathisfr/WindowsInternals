@@ -20,3 +20,7 @@ long PEParserDosHeader::getNtHeadersOffset() {
 std::string PEParserDosHeader::getMagicNumber() {
 	return std::string(reinterpret_cast<char*>(&imageDosHeader.e_magic), sizeof(unsigned short));
 }
+
+IMAGE_DOS_HEADER& PEParserDosHeader::getImageDosHeader() {
+	return imageDosHeader;
+}

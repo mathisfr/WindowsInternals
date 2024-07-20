@@ -15,8 +15,8 @@ PEParserNTHeaders::PEParserNTHeaders(std::ifstream& file, PEParserDosHeader& peP
 		b_error = true;
 	}
 	is64Architecture = CHECK_ARCHITECTURE(file);
-    peParserOptionalHeader64 = PEParserOptionalHeader64(imageNtHeader.OptionalHeader);
     imageFileHeader = imageNtHeader.FileHeader;
+    peParserOptionalHeader64 = PEParserOptionalHeader64(file, peParserDosHeader.getImageDosHeader(), imageNtHeader.FileHeader, imageNtHeader.OptionalHeader);
 
     // Init FileHeader variable
     std::string str_FileHeaderMachine = getMachine(imageFileHeader.Machine);

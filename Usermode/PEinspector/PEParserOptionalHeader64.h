@@ -2,16 +2,26 @@
 #include <Windows.h>
 #include <iomanip>
 #include <map>
+#include <vector>
 
 #define PEPARSER_UNDEFINED_STRING "Undefined"
 #define PEPARSER_IOMANIP_HEX std::hex << std::setw(1) << std::setfill('0')
 
 class PEParserOptionalHeader64
 {
+private:
+    IMAGE_SECTION_HEADER* sectionHeaders;
+    IMAGE_DOS_HEADER* imageDosHeader;
+    IMAGE_FILE_HEADER* imageFileHeader;
+    std::ifstream* file;
+
+    DWORD getOffsetToSectionHeadersFromIndex(unsigned int index);
+    void parseSectionHeaders();
+
 public :
-	IMAGE_OPTIONAL_HEADER64 OptionalHeader;
+	IMAGE_OPTIONAL_HEADER64 imageOptionalHeader;
 	PEParserOptionalHeader64();
-	PEParserOptionalHeader64(IMAGE_OPTIONAL_HEADER64& imageOptionalHeader64);
+    PEParserOptionalHeader64(std::ifstream& file, IMAGE_DOS_HEADER& imageDosHeader, IMAGE_FILE_HEADER& imageFileHeader, IMAGE_OPTIONAL_HEADER64& imageOptionalHeader64);
 
     std::map <std::string, std::string> mapOptionalHeader;
 
@@ -74,4 +84,5 @@ public :
     static std::string getSizeOfHeapCommit(ULONGLONG SizeOfHeapCommit);
     static std::string getLoaderFlags(DWORD LoaderFlags);
     static std::string getNumberOfRvaAndSizes(DWORD NumberOfRvaAndSizes);
+    void printSectionHeaders();
 };
