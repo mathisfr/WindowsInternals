@@ -5,43 +5,42 @@
 #include <iostream>
 
 PEParserOptionalHeader64::PEParserOptionalHeader64(){
+    imageFileHeader = nullptr;
     ZeroMemory(&imageOptionalHeader, sizeof(imageOptionalHeader)); 
 }
 
-PEParserOptionalHeader64::PEParserOptionalHeader64(std::ifstream& file, IMAGE_DOS_HEADER& imageDosHeader, IMAGE_FILE_HEADER& imageFileHeader, IMAGE_OPTIONAL_HEADER64& imageOptionalHeader64) {
+PEParserOptionalHeader64::PEParserOptionalHeader64(IMAGE_FILE_HEADER& imageFileHeader, IMAGE_OPTIONAL_HEADER64& imageOptionalHeader64) {
     imageOptionalHeader = imageOptionalHeader64;
-    this->imageDosHeader = &imageDosHeader;
     this->imageFileHeader = &imageFileHeader;
-    this->file = &file;
-    str_architecture = PEParserOptionalHeader64::getOptionalHeaderMagic(imageOptionalHeader.Magic);
-    str_majorLinkerVersion = PEParserOptionalHeader64::getMajorLinkerVersion(imageOptionalHeader.MajorLinkerVersion);
-    str_minorLinkerVersion = PEParserOptionalHeader64::getMinorLinkerVersion(imageOptionalHeader.MinorLinkerVersion);
-    str_sizeOfCode = PEParserOptionalHeader64::getSizeOfCode(imageOptionalHeader.SizeOfCode);
-    str_sizeOfInitializedData = PEParserOptionalHeader64::getSizeOfInitializedData(imageOptionalHeader.SizeOfInitializedData);
-    str_sizeOfUninitializedData = PEParserOptionalHeader64::getSizeOfUninitializedData(imageOptionalHeader.SizeOfUninitializedData);
-    str_addressOfEntryPoint = PEParserOptionalHeader64::getAddressOfEntryPoint(imageOptionalHeader.AddressOfEntryPoint);
-    str_baseOfCode = PEParserOptionalHeader64::getBaseOfCode(imageOptionalHeader.BaseOfCode);
-    str_imageBase = PEParserOptionalHeader64::getImageBase(imageOptionalHeader.ImageBase);
-    str_sectionAlignment = PEParserOptionalHeader64::getSectionAlignment(imageOptionalHeader.SectionAlignment);
-    str_fileAlignment = PEParserOptionalHeader64::getFileAlignment(imageOptionalHeader.FileAlignment);
-    str_majorOperatingSystemVersion = PEParserOptionalHeader64::getMajorOperatingSystemVersion(imageOptionalHeader.MajorOperatingSystemVersion);
-    str_minorOperatingSystemVersion = PEParserOptionalHeader64::getMinorOperatingSystemVersion(imageOptionalHeader.MinorOperatingSystemVersion);
-    str_majorImageVersion = PEParserOptionalHeader64::getMajorImageVersion(imageOptionalHeader.MajorImageVersion);
-    str_minorImageVersion = PEParserOptionalHeader64::getMinorImageVersion(imageOptionalHeader.MinorImageVersion);
-    str_majorSubsystemVersion = PEParserOptionalHeader64::getMajorSubsystemVersion(imageOptionalHeader.MajorSubsystemVersion);
-    str_minorSubsystemVersion = PEParserOptionalHeader64::getMinorSubsystemVersion(imageOptionalHeader.MinorSubsystemVersion);
-    str_win32VersionValue = PEParserOptionalHeader64::getWin32VersionValue(imageOptionalHeader.Win32VersionValue);
-    str_sizeOfImage = PEParserOptionalHeader64::getSizeOfImage(imageOptionalHeader.SizeOfImage);
-    str_sizeOfHeaders = PEParserOptionalHeader64::getSizeOfHeaders(imageOptionalHeader.SizeOfHeaders);
-    str_checkSum = PEParserOptionalHeader64::getCheckSum(imageOptionalHeader.CheckSum);
-    str_subsystem = PEParserOptionalHeader64::getSubsystem(imageOptionalHeader.Subsystem);
-    str_dllCharacteristics = PEParserOptionalHeader64::getDllCharacteristics(imageOptionalHeader.DllCharacteristics);
-    str_sizeOfStackReserve = PEParserOptionalHeader64::getSizeOfStackReserve(imageOptionalHeader.SizeOfStackReserve);
-    str_sizeOfStackCommit = PEParserOptionalHeader64::getSizeOfStackCommit(imageOptionalHeader.SizeOfStackCommit);
-    str_sizeOfHeapReserve = PEParserOptionalHeader64::getSizeOfHeapReserve(imageOptionalHeader.SizeOfHeapReserve);
-    str_sizeOfHeapCommit = PEParserOptionalHeader64::getSizeOfHeapCommit(imageOptionalHeader.SizeOfHeapCommit);
-    str_loaderFlags = PEParserOptionalHeader64::getLoaderFlags(imageOptionalHeader.LoaderFlags);
-    str_numberOfRvaAndSizes = PEParserOptionalHeader64::getNumberOfRvaAndSizes(imageOptionalHeader.NumberOfRvaAndSizes);
+    str_architecture = PEParserOptionalHeader64::getOptionalHeaderMagic();
+    str_majorLinkerVersion = PEParserOptionalHeader64::getMajorLinkerVersion();
+    str_minorLinkerVersion = PEParserOptionalHeader64::getMinorLinkerVersion();
+    str_sizeOfCode = PEParserOptionalHeader64::getSizeOfCode();
+    str_sizeOfInitializedData = PEParserOptionalHeader64::getSizeOfInitializedData();
+    str_sizeOfUninitializedData = PEParserOptionalHeader64::getSizeOfUninitializedData();
+    str_addressOfEntryPoint = PEParserOptionalHeader64::getAddressOfEntryPoint();
+    str_baseOfCode = PEParserOptionalHeader64::getBaseOfCode();
+    str_imageBase = PEParserOptionalHeader64::getImageBase();
+    str_sectionAlignment = PEParserOptionalHeader64::getSectionAlignment();
+    str_fileAlignment = PEParserOptionalHeader64::getFileAlignment();
+    str_majorOperatingSystemVersion = PEParserOptionalHeader64::getMajorOperatingSystemVersion();
+    str_minorOperatingSystemVersion = PEParserOptionalHeader64::getMinorOperatingSystemVersion();
+    str_majorImageVersion = PEParserOptionalHeader64::getMajorImageVersion();
+    str_minorImageVersion = PEParserOptionalHeader64::getMinorImageVersion();
+    str_majorSubsystemVersion = PEParserOptionalHeader64::getMajorSubsystemVersion();
+    str_minorSubsystemVersion = PEParserOptionalHeader64::getMinorSubsystemVersion();
+    str_win32VersionValue = PEParserOptionalHeader64::getWin32VersionValue();
+    str_sizeOfImage = PEParserOptionalHeader64::getSizeOfImage();
+    str_sizeOfHeaders = PEParserOptionalHeader64::getSizeOfHeaders();
+    str_checkSum = PEParserOptionalHeader64::getCheckSum();
+    str_subsystem = PEParserOptionalHeader64::getSubsystem();
+    str_dllCharacteristics = PEParserOptionalHeader64::getDllCharacteristics();
+    str_sizeOfStackReserve = PEParserOptionalHeader64::getSizeOfStackReserve();
+    str_sizeOfStackCommit = PEParserOptionalHeader64::getSizeOfStackCommit();
+    str_sizeOfHeapReserve = PEParserOptionalHeader64::getSizeOfHeapReserve();
+    str_sizeOfHeapCommit = PEParserOptionalHeader64::getSizeOfHeapCommit();
+    str_loaderFlags = PEParserOptionalHeader64::getLoaderFlags();
+    str_numberOfRvaAndSizes = PEParserOptionalHeader64::getNumberOfRvaAndSizes();
 
     mapOptionalHeader.insert(std::pair<std::string, std::string>("Architecture", str_architecture));
     mapOptionalHeader.insert(std::pair<std::string, std::string>("Major Linker Version", str_majorLinkerVersion));
@@ -73,33 +72,11 @@ PEParserOptionalHeader64::PEParserOptionalHeader64(std::ifstream& file, IMAGE_DO
     mapOptionalHeader.insert(std::pair<std::string, std::string>("Loader Flags", str_loaderFlags));
     mapOptionalHeader.insert(std::pair<std::string, std::string>("Number Of RVA And Sizes", str_numberOfRvaAndSizes));
 
-    sectionHeaders = new IMAGE_SECTION_HEADER[imageFileHeader.NumberOfSections];
-    parseSectionHeaders();
 }
 
-DWORD PEParserOptionalHeader64::getOffsetToSectionHeadersFromIndex(unsigned int index) {
-    return static_cast<DWORD>(imageDosHeader->e_lfanew) + sizeof(IMAGE_NT_HEADERS) + (IMAGE_SIZEOF_SECTION_HEADER * index);
-}
-
-void PEParserOptionalHeader64::parseSectionHeaders() {
-    for (unsigned int i = 0; i < imageFileHeader->NumberOfSections; i++) {
-        DWORD offsetToSectionHeader = getOffsetToSectionHeadersFromIndex(i);
-        file->seekg(offsetToSectionHeader, std::ios_base::beg);
-        file->read(reinterpret_cast<char*>(&sectionHeaders[i]), IMAGE_SIZEOF_SECTION_HEADER);
-    }
-}
-
-void PEParserOptionalHeader64::printSectionHeaders() {
-    std::cout << "Section Headers : " << std::endl;
-    std::string decoratorList("\t\t* ");
-    for (unsigned int i = 0; i < imageFileHeader->NumberOfSections; i++) {
-        std::cout << "\t- " << sectionHeaders[i].Name << std::endl;
-    }
-}
-
-std::string PEParserOptionalHeader64::getOptionalHeaderMagic(WORD magicType) {
+std::string PEParserOptionalHeader64::getOptionalHeaderMagic() {
     std::string magicString = PEPARSER_UNDEFINED_STRING;
-    switch (magicType) {
+    switch (imageOptionalHeader.Magic) {
     case IMAGE_NT_OPTIONAL_HDR32_MAGIC:
         magicString = "PE32";
         break;
@@ -113,9 +90,9 @@ std::string PEParserOptionalHeader64::getOptionalHeaderMagic(WORD magicType) {
     return magicString;
 }
 
-std::string PEParserOptionalHeader64::getSubsystem(WORD subsystemType) {
+std::string PEParserOptionalHeader64::getSubsystem() {
     std::string subsystemString = PEPARSER_UNDEFINED_STRING;
-    switch (subsystemType) {
+    switch (imageOptionalHeader.Subsystem) {
     case IMAGE_SUBSYSTEM_UNKNOWN:
         subsystemString = "Unknown";
         break;
@@ -165,172 +142,172 @@ std::string PEParserOptionalHeader64::getSubsystem(WORD subsystemType) {
     return subsystemString;
 }
 
-std::string PEParserOptionalHeader64::getMajorLinkerVersion(BYTE MajorLinkerVersion) {
+std::string PEParserOptionalHeader64::getMajorLinkerVersion() {
     std::stringstream ss;
-    ss << "0x" << PEPARSER_IOMANIP_HEX << static_cast<int>(MajorLinkerVersion);
+    ss << "0x" << PEPARSER_IOMANIP_HEX << static_cast<int>(imageOptionalHeader.MajorLinkerVersion);
     return ss.str();
 }
-std::string PEParserOptionalHeader64::getMinorLinkerVersion(BYTE MinorLinkerVersion) {
+std::string PEParserOptionalHeader64::getMinorLinkerVersion() {
     std::stringstream ss;
-    ss << "0x" << PEPARSER_IOMANIP_HEX << static_cast<int>(MinorLinkerVersion);
+    ss << "0x" << PEPARSER_IOMANIP_HEX << static_cast<int>(imageOptionalHeader.MinorLinkerVersion);
     return ss.str();
 }
-std::string PEParserOptionalHeader64::getSizeOfCode(DWORD SizeOfCode) {
+std::string PEParserOptionalHeader64::getSizeOfCode() {
     std::stringstream ss;
-    ss << "0x" << PEPARSER_IOMANIP_HEX << SizeOfCode;
+    ss << "0x" << PEPARSER_IOMANIP_HEX << imageOptionalHeader.SizeOfCode;
     return ss.str();
 }
-std::string PEParserOptionalHeader64::getSizeOfInitializedData(DWORD SizeOfInitializedData) {
+std::string PEParserOptionalHeader64::getSizeOfInitializedData() {
     std::stringstream ss;
-    ss << "0x" << PEPARSER_IOMANIP_HEX << SizeOfInitializedData;
+    ss << "0x" << PEPARSER_IOMANIP_HEX << imageOptionalHeader.SizeOfInitializedData;
     return ss.str();
 }
-std::string PEParserOptionalHeader64::getSizeOfUninitializedData(DWORD SizeOfUninitializedData) {
+std::string PEParserOptionalHeader64::getSizeOfUninitializedData() {
     std::stringstream ss;
-    ss << "0x" << PEPARSER_IOMANIP_HEX << SizeOfUninitializedData;
+    ss << "0x" << PEPARSER_IOMANIP_HEX << imageOptionalHeader.SizeOfUninitializedData;
     return ss.str();
 }
-std::string PEParserOptionalHeader64::getAddressOfEntryPoint(DWORD AddressOfEntryPoint) {
+std::string PEParserOptionalHeader64::getAddressOfEntryPoint() {
     std::stringstream ss;
-    ss << "0x" << PEPARSER_IOMANIP_HEX << AddressOfEntryPoint;
+    ss << "0x" << PEPARSER_IOMANIP_HEX << imageOptionalHeader.AddressOfEntryPoint;
     return ss.str();
 }
-std::string PEParserOptionalHeader64::getBaseOfCode(DWORD BaseOfCode) {
+std::string PEParserOptionalHeader64::getBaseOfCode() {
     std::stringstream ss;
-    ss << "0x" << PEPARSER_IOMANIP_HEX << BaseOfCode;
+    ss << "0x" << PEPARSER_IOMANIP_HEX << imageOptionalHeader.BaseOfCode;
     return ss.str();
 }
-std::string PEParserOptionalHeader64::getImageBase(ULONGLONG ImageBase) {
+std::string PEParserOptionalHeader64::getImageBase() {
     std::stringstream ss;
-    ss << "0x" << PEPARSER_IOMANIP_HEX << ImageBase;
+    ss << "0x" << PEPARSER_IOMANIP_HEX << imageOptionalHeader.ImageBase;
     return ss.str();
 }
-std::string PEParserOptionalHeader64::getSectionAlignment(DWORD SectionAlignment) {
+std::string PEParserOptionalHeader64::getSectionAlignment() {
     std::stringstream ss;
-    ss << "0x" << PEPARSER_IOMANIP_HEX << SectionAlignment;
+    ss << "0x" << PEPARSER_IOMANIP_HEX << imageOptionalHeader.SectionAlignment;
     return ss.str();
 }
-std::string PEParserOptionalHeader64::getFileAlignment(DWORD FileAlignment) {
+std::string PEParserOptionalHeader64::getFileAlignment() {
     std::stringstream ss;
-    ss << "0x" << PEPARSER_IOMANIP_HEX << FileAlignment;
+    ss << "0x" << PEPARSER_IOMANIP_HEX << imageOptionalHeader.FileAlignment;
     return ss.str();
 }
-std::string PEParserOptionalHeader64::getMajorOperatingSystemVersion(WORD MajorOperatingSystemVersion) {
+std::string PEParserOptionalHeader64::getMajorOperatingSystemVersion() {
     std::stringstream ss;
-    ss << "0x" << PEPARSER_IOMANIP_HEX << static_cast<int>(MajorOperatingSystemVersion);
+    ss << "0x" << PEPARSER_IOMANIP_HEX << static_cast<int>(imageOptionalHeader.MajorOperatingSystemVersion);
     return ss.str();
 }
-std::string PEParserOptionalHeader64::getMinorOperatingSystemVersion(WORD MinorOperatingSystemVersion) {
+std::string PEParserOptionalHeader64::getMinorOperatingSystemVersion() {
     std::stringstream ss;
-    ss << "0x" << PEPARSER_IOMANIP_HEX << static_cast<int>(MinorOperatingSystemVersion);
+    ss << "0x" << PEPARSER_IOMANIP_HEX << static_cast<int>(imageOptionalHeader.MinorOperatingSystemVersion);
     return ss.str();
 }
-std::string PEParserOptionalHeader64::getMajorImageVersion(WORD MajorImageVersion) {
+std::string PEParserOptionalHeader64::getMajorImageVersion() {
     std::stringstream ss;
-    ss << "0x" << PEPARSER_IOMANIP_HEX << static_cast<int>(MajorImageVersion);
+    ss << "0x" << PEPARSER_IOMANIP_HEX << static_cast<int>(imageOptionalHeader.MajorImageVersion);
     return ss.str();
 }
-std::string PEParserOptionalHeader64::getMinorImageVersion(WORD MinorImageVersion) {
+std::string PEParserOptionalHeader64::getMinorImageVersion() {
     std::stringstream ss;
-    ss << "0x" << PEPARSER_IOMANIP_HEX << static_cast<int>(MinorImageVersion);
+    ss << "0x" << PEPARSER_IOMANIP_HEX << static_cast<int>(imageOptionalHeader.MinorImageVersion);
     return ss.str();
 }
-std::string PEParserOptionalHeader64::getMajorSubsystemVersion(WORD MajorSubsystemVersion) {
+std::string PEParserOptionalHeader64::getMajorSubsystemVersion() {
     std::stringstream ss;
-    ss << "0x" << PEPARSER_IOMANIP_HEX << static_cast<int>(MajorSubsystemVersion);
+    ss << "0x" << PEPARSER_IOMANIP_HEX << static_cast<int>(imageOptionalHeader.MajorSubsystemVersion);
     return ss.str();
 }
-std::string PEParserOptionalHeader64::getMinorSubsystemVersion(WORD MinorSubsystemVersion) {
+std::string PEParserOptionalHeader64::getMinorSubsystemVersion() {
     std::stringstream ss;
-    ss << "0x" << PEPARSER_IOMANIP_HEX << static_cast<int>(MinorSubsystemVersion);
+    ss << "0x" << PEPARSER_IOMANIP_HEX << static_cast<int>(imageOptionalHeader.MinorSubsystemVersion);
     return ss.str();
 }
-std::string PEParserOptionalHeader64::getWin32VersionValue(DWORD Win32VersionValue) {
+std::string PEParserOptionalHeader64::getWin32VersionValue() {
     std::stringstream ss;
-    ss << "0x" << PEPARSER_IOMANIP_HEX << Win32VersionValue;
+    ss << "0x" << PEPARSER_IOMANIP_HEX << imageOptionalHeader.Win32VersionValue;
     return ss.str();
 }
-std::string PEParserOptionalHeader64::getSizeOfImage(DWORD SizeOfImage) {
+std::string PEParserOptionalHeader64::getSizeOfImage() {
     std::stringstream ss;
-    ss << "0x" << PEPARSER_IOMANIP_HEX << SizeOfImage;
+    ss << "0x" << PEPARSER_IOMANIP_HEX << imageOptionalHeader.SizeOfImage;
     return ss.str();
 }
-std::string PEParserOptionalHeader64::getSizeOfHeaders(DWORD SizeOfHeaders) {
+std::string PEParserOptionalHeader64::getSizeOfHeaders() {
     std::stringstream ss;
-    ss << "0x" << PEPARSER_IOMANIP_HEX << SizeOfHeaders;
+    ss << "0x" << PEPARSER_IOMANIP_HEX << imageOptionalHeader.SizeOfHeaders;
     return ss.str();
 }
-std::string PEParserOptionalHeader64::getCheckSum(DWORD CheckSum) {
+std::string PEParserOptionalHeader64::getCheckSum() {
     std::stringstream ss;
-    ss << "0x" << PEPARSER_IOMANIP_HEX << CheckSum;
+    ss << "0x" << PEPARSER_IOMANIP_HEX << imageOptionalHeader.CheckSum;
     return ss.str();
 }
-std::string PEParserOptionalHeader64::getDllCharacteristics(WORD DllCharacteristics) {
+std::string PEParserOptionalHeader64::getDllCharacteristics() {
     std::stringstream ss;
-    std::string listDecorator("\t\t * ");
+    std::string listDecorator("\t\t* ");
     ss << '\n';
-    if (DllCharacteristics & 0x0020) {
+    if (imageOptionalHeader.DllCharacteristics & 0x0020) {
         ss << listDecorator << "Image can handle a high entropy 64 - bit virtual address space." << std::endl;
     }
-    if (DllCharacteristics & 0x0040) {
+    if (imageOptionalHeader.DllCharacteristics & 0x0040) {
         ss << listDecorator << "DLL can be relocated at load time." << std::endl;
     }
-    if (DllCharacteristics & 0x0080) {
+    if (imageOptionalHeader.DllCharacteristics & 0x0080) {
         ss << listDecorator << "Code Integrity checks are enforced." << std::endl;
     }
-    if (DllCharacteristics & 0x0100) {
+    if (imageOptionalHeader.DllCharacteristics & 0x0100) {
         ss << listDecorator << "Image is NX compatible." << std::endl;
     }
-    if (DllCharacteristics & 0x0200) {
+    if (imageOptionalHeader.DllCharacteristics & 0x0200) {
         ss << listDecorator << "Isolation aware, but do not isolate the image." << std::endl;
     }
-    if (DllCharacteristics & 0x0400) {
+    if (imageOptionalHeader.DllCharacteristics & 0x0400) {
         ss << listDecorator << "Does not use structured exception (SE) handling. No SE handler may be called in this image." << std::endl;
     }
-    if (DllCharacteristics & 0x0800) {
+    if (imageOptionalHeader.DllCharacteristics & 0x0800) {
         ss << listDecorator << "Do not bind the image." << std::endl;
     }
-    if (DllCharacteristics & 0x1000) {
+    if (imageOptionalHeader.DllCharacteristics & 0x1000) {
         ss << listDecorator << "Image must execute in an AppContainer." << std::endl;
     }
-    if (DllCharacteristics & 0x2000) {
+    if (imageOptionalHeader.DllCharacteristics & 0x2000) {
         ss << listDecorator << "A WDM driver." << std::endl;
     }
-    if (DllCharacteristics & 0x4000) {
+    if (imageOptionalHeader.DllCharacteristics & 0x4000) {
         ss << listDecorator << "Image supports Control Flow Guard." << std::endl;
     }
-    if (DllCharacteristics & 0x8000) {
+    if (imageOptionalHeader.DllCharacteristics & 0x8000) {
         ss << listDecorator << "Terminal Server aware." << std::endl;
     }
     return ss.str();
 }
-std::string PEParserOptionalHeader64::getSizeOfStackReserve(ULONGLONG SizeOfStackReserve) {
+std::string PEParserOptionalHeader64::getSizeOfStackReserve() {
     std::stringstream ss;
-    ss << "0x" << PEPARSER_IOMANIP_HEX << SizeOfStackReserve;
+    ss << "0x" << PEPARSER_IOMANIP_HEX << imageOptionalHeader.SizeOfStackReserve;
     return ss.str();
 }
-std::string PEParserOptionalHeader64::getSizeOfStackCommit(ULONGLONG SizeOfStackCommit) {
+std::string PEParserOptionalHeader64::getSizeOfStackCommit() {
     std::stringstream ss;
-    ss << "0x" << PEPARSER_IOMANIP_HEX << SizeOfStackCommit;
+    ss << "0x" << PEPARSER_IOMANIP_HEX << imageOptionalHeader.SizeOfStackCommit;
     return ss.str();
 }
-std::string PEParserOptionalHeader64::getSizeOfHeapReserve(ULONGLONG SizeOfHeapReserve) {
+std::string PEParserOptionalHeader64::getSizeOfHeapReserve() {
     std::stringstream ss;
-    ss << "0x" << PEPARSER_IOMANIP_HEX << SizeOfHeapReserve;
+    ss << "0x" << PEPARSER_IOMANIP_HEX << imageOptionalHeader.SizeOfHeapReserve;
     return ss.str();
 }
-std::string PEParserOptionalHeader64::getSizeOfHeapCommit(ULONGLONG SizeOfHeapCommit) {
+std::string PEParserOptionalHeader64::getSizeOfHeapCommit() {
     std::stringstream ss;
-    ss << "0x" << PEPARSER_IOMANIP_HEX << SizeOfHeapCommit;
+    ss << "0x" << PEPARSER_IOMANIP_HEX << imageOptionalHeader.SizeOfHeapCommit;
     return ss.str();
 }
-std::string PEParserOptionalHeader64::getLoaderFlags(DWORD LoaderFlags) {
+std::string PEParserOptionalHeader64::getLoaderFlags() {
     std::stringstream ss;
-    ss << "0x" << PEPARSER_IOMANIP_HEX << LoaderFlags;
+    ss << "0x" << PEPARSER_IOMANIP_HEX << imageOptionalHeader.LoaderFlags;
     return ss.str();
 }
-std::string PEParserOptionalHeader64::getNumberOfRvaAndSizes(DWORD NumberOfRvaAndSizes) {
+std::string PEParserOptionalHeader64::getNumberOfRvaAndSizes() {
     std::stringstream ss;
-    ss << "0x" << PEPARSER_IOMANIP_HEX << NumberOfRvaAndSizes;
+    ss << "0x" << PEPARSER_IOMANIP_HEX << imageOptionalHeader.NumberOfRvaAndSizes;
     return ss.str();
 }

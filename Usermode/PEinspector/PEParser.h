@@ -4,6 +4,9 @@
 #include "PEParserDosHeader.h"
 #include "PEParserNTHeaders.h"
 
+
+class PEParserNTHeaders;
+
 class PEParser
 {
 private:
@@ -11,16 +14,19 @@ private:
 	std::ifstream file;
 	PEParser();
 
-	void printTitle(std::string str);
-	void printStandard(std::string strA, std::string strB);
 public:
+	~PEParser();
 	PEParser(std::string fileName);
 	void printDump();
 
-	PEParserDosHeader peParserDosHeader;
-	PEParserNTHeaders peParserNTHeaders;
+	PEParserDosHeader* peParserDosHeader;
+	PEParserNTHeaders* peParserNTHeaders;
 
 	bool b_error = false;
 	bool b_is64 = false;
+
+	static void printTitle(std::string str);
+	static void printStandard(std::string strA, std::string strB);
+	static void printStandardList(std::string strA, std::string strB);
 };
 

@@ -10,18 +10,12 @@
 class PEParserOptionalHeader64
 {
 private:
-    IMAGE_SECTION_HEADER* sectionHeaders;
-    IMAGE_DOS_HEADER* imageDosHeader;
-    IMAGE_FILE_HEADER* imageFileHeader;
-    std::ifstream* file;
-
-    DWORD getOffsetToSectionHeadersFromIndex(unsigned int index);
-    void parseSectionHeaders();
+    IMAGE_FILE_HEADER* imageFileHeader = nullptr;
 
 public :
 	IMAGE_OPTIONAL_HEADER64 imageOptionalHeader;
 	PEParserOptionalHeader64();
-    PEParserOptionalHeader64(std::ifstream& file, IMAGE_DOS_HEADER& imageDosHeader, IMAGE_FILE_HEADER& imageFileHeader, IMAGE_OPTIONAL_HEADER64& imageOptionalHeader64);
+    PEParserOptionalHeader64(IMAGE_FILE_HEADER& imageFileHeader, IMAGE_OPTIONAL_HEADER64& imageOptionalHeader64);
 
     std::map <std::string, std::string> mapOptionalHeader;
 
@@ -55,34 +49,33 @@ public :
     std::string str_loaderFlags;
     std::string str_numberOfRvaAndSizes;
 
-    static std::string getOptionalHeaderMagic(WORD MagicType);
-    static std::string getMajorLinkerVersion(BYTE MajorLinkerVersion);
-    static std::string getMinorLinkerVersion(BYTE MinorLinkerVersion);
-    static std::string getSizeOfCode(DWORD SizeOfCode);
-    static std::string getSizeOfInitializedData(DWORD SizeOfInitializedData);
-    static std::string getSizeOfUninitializedData(DWORD SizeOfUninitializedData);
-    static std::string getAddressOfEntryPoint(DWORD AddressOfEntryPoint);
-    static std::string getBaseOfCode(DWORD BaseOfCode);
-    static std::string getImageBase(ULONGLONG ImageBase);
-    static std::string getSectionAlignment(DWORD SectionAlignment);
-    static std::string getFileAlignment(DWORD FileAlignment);
-    static std::string getMajorOperatingSystemVersion(WORD MajorOperatingSystemVersion);
-    static std::string getMinorOperatingSystemVersion(WORD MinorOperatingSystemVersion);
-    static std::string getMajorImageVersion(WORD MajorImageVersion);
-    static std::string getMinorImageVersion(WORD MinorImageVersion);
-    static std::string getMajorSubsystemVersion(WORD MajorSubsystemVersion);
-    static std::string getMinorSubsystemVersion(WORD MinorSubsystemVersion);
-    static std::string getWin32VersionValue(DWORD Win32VersionValue);
-    static std::string getSizeOfImage(DWORD SizeOfImage);
-    static std::string getSizeOfHeaders(DWORD SizeOfHeaders);
-    static std::string getCheckSum(DWORD CheckSum);
-    static std::string getSubsystem(WORD SubsystemType);
-    static std::string getDllCharacteristics(WORD DllCharacteristics);
-    static std::string getSizeOfStackReserve(ULONGLONG SizeOfStackReserve);
-    static std::string getSizeOfStackCommit(ULONGLONG SizeOfStackCommit);
-    static std::string getSizeOfHeapReserve(ULONGLONG SizeOfHeapReserve);
-    static std::string getSizeOfHeapCommit(ULONGLONG SizeOfHeapCommit);
-    static std::string getLoaderFlags(DWORD LoaderFlags);
-    static std::string getNumberOfRvaAndSizes(DWORD NumberOfRvaAndSizes);
-    void printSectionHeaders();
+    std::string getOptionalHeaderMagic();
+    std::string getMajorLinkerVersion();
+    std::string getMinorLinkerVersion();
+    std::string getSizeOfCode();
+    std::string getSizeOfInitializedData();
+    std::string getSizeOfUninitializedData();
+    std::string getAddressOfEntryPoint();
+    std::string getBaseOfCode();
+    std::string getImageBase();
+    std::string getSectionAlignment();
+    std::string getFileAlignment();
+    std::string getMajorOperatingSystemVersion();
+    std::string getMinorOperatingSystemVersion();
+    std::string getMajorImageVersion();
+    std::string getMinorImageVersion();
+    std::string getMajorSubsystemVersion();
+    std::string getMinorSubsystemVersion();
+    std::string getWin32VersionValue();
+    std::string getSizeOfImage();
+    std::string getSizeOfHeaders();
+    std::string getCheckSum();
+    std::string getSubsystem();
+    std::string getDllCharacteristics();
+    std::string getSizeOfStackReserve();
+    std::string getSizeOfStackCommit();
+    std::string getSizeOfHeapReserve();
+    std::string getSizeOfHeapCommit();
+    std::string getLoaderFlags();
+    std::string getNumberOfRvaAndSizes();
 };

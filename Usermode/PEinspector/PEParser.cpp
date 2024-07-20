@@ -13,14 +13,14 @@ PEParser::PEParser(std::string fileName) {
 		b_error = true;
 		return;
 	}
-	peParserDosHeader = PEParserDosHeader(file);
-	if (peParserDosHeader.b_error) {
+	peParserDosHeader = new PEParserDosHeader(file);
+	if (peParserDosHeader->b_error) {
 		std::cerr << "Erreur PEParserDosHeader\n";
 		b_error = true;
 		return;
 	}
-	peParserNTHeaders = PEParserNTHeaders(file, peParserDosHeader, b_is64);
-	if (peParserNTHeaders.b_error) {
+	peParserNTHeaders = new PEParserNTHeaders(file, *peParserDosHeader, b_is64);
+	if (peParserNTHeaders->b_error) {
 		std::cerr << "Erreur PEParserNTHeaders\n";
 		b_error = true;
 		return;
@@ -30,17 +30,17 @@ PEParser::PEParser(std::string fileName) {
 void PEParser::printDump() {
 	std::cout << "[PE inspector " << fileName << "]" << std::endl;
 	printTitle("DosHeader");
-	printStandard("Magic Number", peParserDosHeader.getMagicNumber());
+	printStandard("Magic Number", peParserDosHeader->getMagicNumber());
 	printTitle("NTHeaders");
 	printTitle("FileHeader");
-	for (std::map<std::string, std::string>::iterator it = peParserNTHeaders.mapFileHeader.begin(); it != peParserNTHeaders.mapFileHeader.end(); it++) {
+	for (std::map<std::string, std::string>::iterator it = peParserNTHeaders->mapFileHeader.begin(); it != peParserNTHeaders->mapFileHeader.end(); it++) {
 		printStandard(it->first, it->second);
 	}
 	printTitle("OptionalHeader");
-	for (std::map<std::string, std::string>::iterator it = peParserNTHeaders.peParserOptionalHeader64.mapOptionalHeader.begin(); it != peParserNTHeaders.peParserOptionalHeader64.mapOptionalHeader.end(); it++) {
+	for (std::map<std::string, std::string>::iterator it = peParserNTHeaders->peParserOptionalHeader64.mapOptionalHeader.begin(); it != peParserNTHeaders->peParserOptionalHeader64.mapOptionalHeader.end(); it++) {
 		printStandard(it->first, it->second);
 	}
-	peParserNTHeaders.peParserOptionalHeader64.printSectionHeaders();
+	peParserNTHeaders->printSectionHeaders();
 }
 
 void PEParser::printTitle(std::string str) {
@@ -49,4 +49,17 @@ void PEParser::printTitle(std::string str) {
 
 void PEParser::printStandard(std::string strA, std::string strB){
 	std::cout << "\t- " << strA << ": " << strB << std::endl;
+}
+
+void PEParser::printStandardList(std::string strA, std::string strB) {
+	std::cout << "\t\t* " << strA << ": " << strB << std::endl;
+}
+
+PEParser::~PEParser() {
+	if (peParserDosHeader) {
+		delete peParserDosHeader;
+	}
+	if (peParserNTHeaders) {
+		delete peParserNTHeaders;
+	}
 }

@@ -14,5 +14,6 @@ int main() {
 		return 1;
 	}
 	peParser.printDump();
+	system("pause");
 	return 0;
 }

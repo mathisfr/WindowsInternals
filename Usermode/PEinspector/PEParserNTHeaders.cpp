@@ -3,29 +3,31 @@
 #include <iostream>
 #include <sstream>
 #include <ctime>
+
 PEParserNTHeaders::PEParserNTHeaders() {
     ZeroMemory(&imageNtHeader, sizeof(imageNtHeader));
-    ZeroMemory(&imageFileHeader, sizeof(imageNtHeader));
 }
 
 PEParserNTHeaders::PEParserNTHeaders(std::ifstream& file, PEParserDosHeader& peParserDosHeader, bool& is64Architecture) {
 	file.seekg(peParserDosHeader.getNtHeadersOffset(), std::ios_base::beg);
+    this->file = &file;
 	file.read(reinterpret_cast<char*>(&imageNtHeader), sizeof(imageNtHeader));
 	if (!file) {
 		b_error = true;
 	}
+    this->imageDosHeader = &peParserDosHeader.getImageDosHeader();
+    imageFileHeader = &imageNtHeader.FileHeader;
 	is64Architecture = CHECK_ARCHITECTURE(file);
-    imageFileHeader = imageNtHeader.FileHeader;
-    peParserOptionalHeader64 = PEParserOptionalHeader64(file, peParserDosHeader.getImageDosHeader(), imageNtHeader.FileHeader, imageNtHeader.OptionalHeader);
+    peParserOptionalHeader64 = PEParserOptionalHeader64(imageNtHeader.FileHeader, imageNtHeader.OptionalHeader);
 
     // Init FileHeader variable
-    std::string str_FileHeaderMachine = getMachine(imageFileHeader.Machine);
-    std::string str_FileHeaderNumberOfSections = getNumberOfSections(imageFileHeader.NumberOfSections);
-    std::string str_FileHeaderTimeDateStamp = getTimeDateStamp(imageFileHeader.TimeDateStamp);
-    std::string str_FileHeaderPointerToSymbolTable = getPointerToSymbolTable(imageFileHeader.PointerToSymbolTable);
-    std::string str_FileHeaderNumberOfSymbols = getNumberOfSymbols(imageFileHeader.NumberOfSymbols);
-    std::string str_FileHeaderSizeOfOptionalHeader = getSizeOfOptionalHeader(imageFileHeader.SizeOfOptionalHeader);
-    std::string str_FileHeaderCharacteristics = getCharacteristics(imageFileHeader.Characteristics);
+    std::string str_FileHeaderMachine = getMachine(imageFileHeader->Machine);
+    std::string str_FileHeaderNumberOfSections = getNumberOfSections(imageFileHeader->NumberOfSections);
+    std::string str_FileHeaderTimeDateStamp = getTimeDateStamp(imageFileHeader->TimeDateStamp);
+    std::string str_FileHeaderPointerToSymbolTable = getPointerToSymbolTable(imageFileHeader->PointerToSymbolTable);
+    std::string str_FileHeaderNumberOfSymbols = getNumberOfSymbols(imageFileHeader->NumberOfSymbols);
+    std::string str_FileHeaderSizeOfOptionalHeader = getSizeOfOptionalHeader(imageFileHeader->SizeOfOptionalHeader);
+    std::string str_FileHeaderCharacteristics = getCharacteristics(imageFileHeader->Characteristics);
 
     mapFileHeader.insert(std::pair<std::string, std::string>("Machine", str_FileHeaderMachine));
     mapFileHeader.insert(std::pair<std::string, std::string>("Number Of Sections", str_FileHeaderNumberOfSections));
@@ -34,6 +36,16 @@ PEParserNTHeaders::PEParserNTHeaders(std::ifstream& file, PEParserDosHeader& peP
     mapFileHeader.insert(std::pair<std::string, std::string>("Number Of Symbols", str_FileHeaderNumberOfSymbols));
     mapFileHeader.insert(std::pair<std::string, std::string>("Size Of Optional Header", str_FileHeaderSizeOfOptionalHeader));
     mapFileHeader.insert(std::pair<std::string, std::string>("Characteristics", str_FileHeaderCharacteristics));
+
+    // Section header
+    sectionHeaders = new IMAGE_SECTION_HEADER[imageFileHeader->NumberOfSections];
+    parseSectionHeaders();
+}
+
+PEParserNTHeaders::~PEParserNTHeaders() {
+    if (sectionHeaders) {
+        delete[] sectionHeaders;
+    }
 }
 
 std::string PEParserNTHeaders::getSignature() {
@@ -251,4 +263,46 @@ std::string PEParserNTHeaders::getCharacteristics(WORD characteristics){
     }
 
     return ss.str();
+}
+
+// Section Header
+
+void PEParserNTHeaders::printSectionHeaders() {
+    PEParser::printTitle("Section Headers");
+    //std::string decoratorList("\t\t* ");
+    for (unsigned int i = 0; i < imageFileHeader->NumberOfSections; i++) {
+        mapSectionHeader.insert(std::pair<std::string, std::string>("Section", getSectionHeaderName(i)));
+        mapSectionHeader.insert(std::pair<std::string, std::string>("Number Of Linenumbers", std::to_string(getSectionHeaderNumberOfLinenumbers(i))));
+
+        for (std::unordered_map<std::string, std::string>::iterator it = mapSectionHeader.begin(); it != mapSectionHeader.end(); it++) {
+            if (it->first == "Section"){
+                PEParser::printStandard(it->first, it->second);
+            }
+            else {
+                PEParser::printStandardList(it->first, it->second);
+            }
+        }
+    }
+}
+
+void PEParserNTHeaders::parseSectionHeaders() {
+    if (sectionHeaders) {
+        for (unsigned int i = 0; i < imageFileHeader->NumberOfSections; i++) {
+            DWORD offsetToSectionHeader = getOffsetToSectionHeadersFromIndex(i);
+            file->seekg(offsetToSectionHeader, std::ios_base::beg);
+            file->read(reinterpret_cast<char*>(&sectionHeaders[i]), IMAGE_SIZEOF_SECTION_HEADER);
+        }
+    }
+}
+
+DWORD PEParserNTHeaders::getOffsetToSectionHeadersFromIndex(unsigned int index) {
+    return static_cast<DWORD>(imageDosHeader->e_lfanew) + sizeof(IMAGE_NT_HEADERS) + (IMAGE_SIZEOF_SECTION_HEADER * index);
+}
+
+std::string PEParserNTHeaders::getSectionHeaderName(int index) {
+    return std::string(reinterpret_cast<char*>(&sectionHeaders[index].Name));
+}
+
+int PEParserNTHeaders::getSectionHeaderNumberOfLinenumbers(int index) {
+    return static_cast<int>(sectionHeaders[index].NumberOfLinenumbers);
 }
